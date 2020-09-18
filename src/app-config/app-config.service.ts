@@ -4,7 +4,8 @@ import { CONFIG_ENV, CONFIG_PORT } from "./configuration";
 
 @Injectable()
 export class AppConfigService {
-    private static readonly ENV_DEV = "development";
+    public static readonly ENV_DEV = "development";
+    public static readonly ENV_TEST = "test";
 
     constructor(private readonly configService: ConfigService) { }
 
@@ -17,6 +18,7 @@ export class AppConfigService {
     }
 
     isDevelopment(): boolean {
-        return this.environment() === AppConfigService.ENV_DEV;
+        return [AppConfigService.ENV_DEV, AppConfigService.ENV_TEST]
+            .includes(this.environment());
     }
 }

@@ -1,8 +1,8 @@
 const ENV_APP_PORT = "APP_PORT";
 const ENV_NODE_ENV = "NODE_ENV";
 
-const DEFAULT_PORT = "8080";
-const DEFAULT_ENV = "production";
+export const DEFAULT_PORT = "8080";
+export const DEFAULT_ENV = "production";
 
 export const CONFIG_PORT = "port";
 export const CONFIG_ENV = "environment";
