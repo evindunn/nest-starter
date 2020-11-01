@@ -1,20 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { CONFIG_ENV, CONFIG_PORT } from "./configuration";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ENV_APP_PORT, ENV_NODE_ENV } from './configuration';
 
 @Injectable()
 export class AppConfigService {
-    public static readonly ENV_DEV = "development";
-    public static readonly ENV_TEST = "test";
+    public static readonly ENV_DEV = 'development';
+    public static readonly ENV_TEST = 'test';
 
     constructor(private readonly configService: ConfigService) { }
 
     port(): number {
-        return this.configService.get<number>(CONFIG_PORT);
+        return this.configService.get<number>(ENV_APP_PORT);
     }
 
     environment(): string {
-        return this.configService.get<string>(CONFIG_ENV);
+        return this.configService.get<string>(ENV_NODE_ENV);
     }
 
     isDevelopment(): boolean {

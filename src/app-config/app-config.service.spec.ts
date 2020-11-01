@@ -1,9 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { AppConfigService } from "./app-config.service";
-import { ConfigModule } from "@nestjs/config";
-import configBuilder, { DEFAULT_ENV, DEFAULT_PORT } from "./configuration";
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppConfigService } from './app-config.service';
+import { ConfigModule } from '@nestjs/config';
+import configBuilder, { DEFAULT_ENV, DEFAULT_PORT } from './configuration';
 
-describe("AppConfigService", () => {
+describe('AppConfigService', () => {
     let service: AppConfigService;
 
     beforeEach(async () => {
@@ -15,19 +15,19 @@ describe("AppConfigService", () => {
         service = module.get<AppConfigService>(AppConfigService);
     });
 
-    it("should be defined", () => {
+    it('should be defined', () => {
         expect(service).toBeDefined();
     });
 
-    it("should return the default port", () => {
+    it('should return the default port', () => {
         expect(service.port()).toBe(DEFAULT_PORT);
     });
 
-    it("should return the test environment", () => {
+    it('should return the test environment', () => {
         expect(service.environment()).toBe(AppConfigService.ENV_TEST);
     });
 
-    it("should say we're in development", () => {
+    it('should say we\'re in development', () => {
         expect(service.isDevelopment()).toBe(true);
     });
 });

@@ -11,7 +11,7 @@ env:
   node: true
   jest: true
 rules:
-  quotes: [ warn, double ]
+  quotes: [ warn, single ]
   indent: [ warn, 4 ]
   brace-style: [ warn, stroustrup ]
   "@typescript-eslint/interface-name-prefix": off

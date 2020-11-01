@@ -1,13 +1,13 @@
-import { NestFactory, Reflector } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import cors from "cors";
-import helmet from "helmet";
-import { AppConfigService } from "./app-config/app-config.service";
-import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
+import { NestFactory, Reflector } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cors from 'cors';
+import helmet from 'helmet';
+import { AppConfigService } from './app-config/app-config.service';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
-const GLOBAL_API_PREFIX = "api/v1";
-const SWAGGER_DOCS_PREFIX = "docs"
+const GLOBAL_API_PREFIX = 'api/v1';
+const SWAGGER_DOCS_PREFIX = 'docs'
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -15,9 +15,9 @@ async function bootstrap() {
 
     // Build docs
     const options = new DocumentBuilder()
-        .setTitle("Cats example")
-        .setDescription("The cats API description")
-        .setVersion("1.0")
+        .setTitle('Cats example')
+        .setDescription('The cats API description')
+        .setVersion('1.0')
         .build();
 
     // Has to be done before swagger doc is created
