@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppConfigService } from './app-config.service';
 import { ConfigModule } from '@nestjs/config';
-import configBuilder, { DEFAULT_ENV, DEFAULT_PORT } from './configuration';
 
-describe('AppConfigService', () => {
+describe('AppConfigService [DEFAULTS]', () => {
     let service: AppConfigService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [ConfigModule.forRoot({ load: [configBuilder] })],
+            imports: [
+                ConfigModule.forRoot({ ignoreEnvFile: true })
+            ],
             providers: [AppConfigService],
         }).compile();
 
@@ -20,14 +21,16 @@ describe('AppConfigService', () => {
     });
 
     it('should return the default port', () => {
-        expect(service.port()).toBe(DEFAULT_PORT);
+        expect(service.app.port()).toBe(8080);
     });
 
     it('should return the test environment', () => {
-        expect(service.environment()).toBe(AppConfigService.ENV_TEST);
+        expect(service.app.env()).toBe('test');
+        expect(service.app.isDev()).toBe(true);
     });
 
-    it('should say we\'re in development', () => {
-        expect(service.isDevelopment()).toBe(true);
+    it('should return the default CORS params', () => {
+        expect(service.app.cors.origin()).toBe('');
+        expect(service.app.cors.allowCredentials()).toBe(false);
     });
 });

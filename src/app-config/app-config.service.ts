@@ -1,24 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ENV_APP_PORT, ENV_NODE_ENV } from './configuration';
+
+const ENV_VAR_APP_CORS_ALLOW_CREDS = "APP_CORS_ALLOW_CREDS";
+const ENV_VAR_APP_CORS_ORIGIN = "APP_CORS_ORIGIN";
+const ENV_VAR_APP_ENVIRONMENT = "NODE_ENV";
+const ENV_VAR_APP_PORT = "APP_PORT";
+
+const DEFAULT_APP_ENVIRONMENT = "production";
+const DEFAULT_APP_CORS_ORIGIN = ""
+const DEFAULT_APP_PORT = 8080;
+
+interface AppConfig {
+    env: () => string;
+    port: () => number;
+    isDev: () => boolean;
+    cors: {
+        allowCredentials: () => boolean,
+        origin: () => string
+    }
+}
 
 @Injectable()
 export class AppConfigService {
-    public static readonly ENV_DEV = 'development';
-    public static readonly ENV_TEST = 'test';
+    constructor(private readonly config: ConfigService) { }
 
-    constructor(private readonly configService: ConfigService) { }
-
-    port(): number {
-        return this.configService.get<number>(ENV_APP_PORT);
-    }
-
-    environment(): string {
-        return this.configService.get<string>(ENV_NODE_ENV);
-    }
-
-    isDevelopment(): boolean {
-        return [AppConfigService.ENV_DEV, AppConfigService.ENV_TEST]
-            .includes(this.environment());
+    public readonly app: AppConfig = {
+        env: () => this.config.get<string>(ENV_VAR_APP_ENVIRONMENT) || DEFAULT_APP_ENVIRONMENT,
+        port: () => this.config.get<number>(ENV_VAR_APP_PORT) || DEFAULT_APP_PORT,
+        isDev: () => ["development", "test"].includes(this.app.env()),
+        cors: {
+            allowCredentials: () => this.config.get<string>(ENV_VAR_APP_CORS_ALLOW_CREDS) === 'true',
+            origin: () => this.config.get<string>(ENV_VAR_APP_CORS_ORIGIN) || DEFAULT_APP_CORS_ORIGIN,
+        }
     }
 }

@@ -1,51 +1,51 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cors from 'cors';
-import helmet from 'helmet';
 import { AppConfigService } from './app-config/app-config.service';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
-const GLOBAL_API_PREFIX = 'api/v1';
-const SWAGGER_DOCS_PREFIX = 'docs'
+const API_TITLE = 'NestJS API';
+const API_VERSION = 'v1';
+const API_DOCS_ROUTE = 'docs';
+
+const logger = new Logger(API_TITLE);
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    const configService = app.get(AppConfigService);
+    const config = app.get(AppConfigService);
 
-    // Build docs
-    const options = new DocumentBuilder()
-        .setTitle('Cats example')
-        .setDescription('The cats API description')
-        .setVersion('1.0')
-        .build();
+    app.setGlobalPrefix(`/api/${API_VERSION}`);
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+    app.getHttpAdapter().enableCors({
+        origin: config.app.cors.origin(),
+        credentials: config.app.cors.allowCredentials()
+    });
 
-    // Has to be done before swagger doc is created
-    app.setGlobalPrefix(GLOBAL_API_PREFIX);
+    logger.log(`App environment: ${config.app.env()}`);
 
-    // Configure docs
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(SWAGGER_DOCS_PREFIX, app, document);
+    if (config.app.isDev()) {
+        logger.log(`Docs available at /${API_DOCS_ROUTE}`);
 
-    // Enable helmet in production
-    if (!configService.isDevelopment()) {
+        const swaggerBuilder = new DocumentBuilder()
+            .setTitle(API_TITLE)
+            .setVersion(API_VERSION)
+            .build();
+
+        const swaggerDoc = SwaggerModule.createDocument(app, swaggerBuilder);
+        SwaggerModule.setup(API_DOCS_ROUTE, app, swaggerDoc);
+    }
+    else {
+        logger.log("Docs disabled");
         app.use(helmet());
     }
 
-    // Enable CORS
-    app.use(cors());
-
-    // Validate input
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-
-    // Serialize output
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-    // Start server
-    await app.listen(configService.port());
+    logger.log(`Server listening on port ${config.app.port()}...`);
+    await app.listen(config.app.port());
 }
 
 bootstrap().catch((e) => {
-    console.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
 });
